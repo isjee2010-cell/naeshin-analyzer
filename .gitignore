@@ -1,0 +1,17 @@
+# ── 학생 자료가 저장소에 들어가지 않게 막습니다 ──
+*.xls
+*.xlsx
+*.xlsm
+*.csv
+*.hwp
+*.hwpx
+*.pdf
+*.zip
+naeshin_backup_*
+naeshin_helper_*.html
+# 빌드 결과는 Releases에만 올립니다
+dist/
+tests/tmp/
+node_modules/
+.DS_Store
+Thumbs.db
