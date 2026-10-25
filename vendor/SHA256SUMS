@@ -1,0 +1,4 @@
+# 포함 라이브러리 원본 해시 (tools/build.py가 확인)
+# exceljs: npm exceljs@4.4.0 dist/exceljs.min.js / xlsx: https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js
+7e49da68588e250dbb8bba190d2caa8ab3787cc0284bda1d8b2f805c4df742c9  exceljs-4.4.0.min.js
+cc015130aa8521e7f088f88898eba949ccdcbfb38df0bd129b44b7273c3a6f41  xlsx-0.20.3.full.min.js

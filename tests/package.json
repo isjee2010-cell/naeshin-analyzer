@@ -1,0 +1,7 @@
+{
+  "name": "naeshin-analyzer-tests",
+  "private": true,
+  "description": "브라우저 통합·보안 시험 (배포물에는 포함되지 않음)",
+  "scripts": { "test": "node e2e.mjs" },
+  "devDependencies": { "playwright": "1.56.0" }
+}

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko" data-app="naeshin-analyzer">
+<head>
+<meta charset="utf-8">
+<!-- 보안: 이 페이지는 어떤 서버와도 통신하지 못하게 브라우저가 막습니다 (성적이 PC 밖으로 나갈 길이 없음) -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; worker-src 'none'; manifest-src 'none'; form-action 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>내신 성적 분석 도우미</title>
+<!--
+  내신 성적 분석 도우미 v/*@@VER@@*/
+  나이스 교과학습발달상황 엑셀을 올리면 반별 학생카드와 학년 전체 분석을 만드는 단일 HTML 도구.
+  모든 처리는 이 PC의 브라우저 안에서만 이루어지며 외부로 전송하지 않습니다.
+
+  ----------------------------------------------------------------------
+  포함된 라이브러리와 라이선스
+  ----------------------------------------------------------------------
+  1) ExcelJS 4.4.0 (엑셀 파일 쓰기) — MIT License
+     Copyright (c) 2014-2019 Guyon Roche
+
+     Permission is hereby granted, free of charge, to any person obtaining a copy
+     of this software and associated documentation files (the "Software"), to deal
+     in the Software without restriction, including without limitation the rights
+     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     copies of the Software, and to permit persons to whom the Software is
+     furnished to do so, subject to the following conditions:
+
+     The above copyright notice and this permission notice shall be included in all
+     copies or substantial portions of the Software.
+
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     SOFTWARE.
+
+     ExcelJS에 함께 묶인 하위 라이브러리(JSZip, pako, sax, saxes 등)는 각자의 라이선스를 따릅니다.
+
+  2) SheetJS Community Edition 0.20.3 (엑셀 .xls/.xlsx 읽기) — Apache License 2.0
+     Copyright (C) 2013-present SheetJS LLC
+     Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+     this file except in compliance with the License. You may obtain a copy of the
+     License at http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software distributed
+     under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+     CONDITIONS OF ANY KIND, either express or implied. See the License for the
+     specific language governing permissions and limitations under the License.
+  ----------------------------------------------------------------------
+-->
+<style>/*@@CSS@@*/</style>
+</head>
+<body>
+<header class="hdr">
+ <div class="wrap hdr-in">
+  <div class="hdr-l">
+    <div class="ttl"><i data-ic="logo"></i>내신 성적 분석 도우미</div>
+    <div class="sub">나이스 성적 파일을 넣으면 반별 학생카드·학년 분석이 바로 나옵니다</div>
+  </div>
+  <div class="hdr-r">
+    <div class="srch" role="combobox" aria-haspopup="listbox"><i data-ic="search"></i><input id="stuSearch" type="search" placeholder="학생 검색 (이름·번호)" autocomplete="off" aria-label="학생 검색"><div id="srchList" class="srch-list" role="listbox"></div></div>
+    <button id="maskChip" class="hchip" hidden title="누르면 이름을 다시 보입니다">이름 가림 중 <i data-ic="x"></i></button>
+    <div class="vmenu">
+      <button id="btnView" class="hbtn" aria-haspopup="true" aria-expanded="false" aria-controls="viewPop"><i data-ic="eye"></i>보기 <span class="caret" aria-hidden="true">▾</span></button>
+      <div id="viewPop" class="vpop" role="dialog" aria-label="보기 설정" hidden>
+        <div class="vrow"><div><b>이름 가리기</b><small>화면 공유·연수용 · 인쇄도 가림, 엑셀은 실명</small></div>
+          <label class="tgl"><input type="checkbox" id="tglMask"><span class="tr"><i></i></span><span class="sr">이름 가리기</span></label></div>
+        <div class="vrow"><div><b>글자 크기</b><small>프로젝터·큰 화면에서 크게</small></div>
+          <div class="seg" role="group" aria-label="글자 크기"><button data-zoom="1">100%</button><button data-zoom="1.15">115%</button><button data-zoom="1.3">130%</button></div></div>
+        <div class="vrow"><div><b>화면 밝기</b><small>자동은 PC 설정을 따름 · 인쇄는 항상 밝게</small></div>
+          <div class="seg" role="group" aria-label="화면 밝기"><button data-theme-set="auto">자동</button><button data-theme-set="light">밝게</button><button data-theme-set="dark">어둡게</button></div></div>
+        <button id="btnPresent" class="btn ghost vfull">발표 모드 시작 <small>크게 + 전체 화면 · Esc로 끝</small></button>
+      </div>
+    </div>
+    <div class="savebox" role="group" aria-label="저장">
+      <span id="saveState" class="pill">저장 상태</span>
+      <button id="btnConnect" class="hbtn connect"><i data-ic="save"></i><span class="hide-m">파일에 </span>저장 연결</button>
+    </div>
+    <button id="btnBackup" class="hbtn"><i data-ic="lock"></i>백업<span class="hide-m">·지우기</span></button>
+  </div>
+ </div>
+</header>
+<div id="banners" class="wrap"></div>
+<nav class="tabs" id="tabs"><div class="wrap tabs-in">
+  <button data-tab="upload"><i data-ic="upload"></i>성적 올리기</button>
+  <button data-tab="class"><i data-ic="class"></i>반 요약</button>
+  <button data-tab="card"><i data-ic="card"></i>학생카드</button>
+  <button data-tab="grade"><i data-ic="grade"></i>학년 분석</button>
+  <button data-tab="settings"><i data-ic="settings"></i>설정</button>
+  <button data-tab="help"><i data-ic="help"></i>간단 사용법</button>
+</div></nav>
+<main>
+  <section id="tab-upload" class="tab"></section>
+  <section id="tab-class" class="tab"></section>
+  <section id="tab-card" class="tab"></section>
+  <section id="tab-grade" class="tab"></section>
+  <section id="tab-settings" class="tab"></section>
+  <section id="tab-help" class="tab"></section>
+</main>
+<div id="dock" class="dock" aria-label="학생 이동"></div>
+<div id="dropOverlay"><div><i data-ic="upload"></i>여기에 놓으면 올립니다<small>나이스 성적 파일 · 백업 엑셀 · 도우미 HTML · 설정 양식</small></div></div>
+<div id="printArea"></div>
+<div id="modalRoot"></div>
+<div id="toastRoot"></div>
+<input type="file" id="fileAny" multiple accept=".xls,.xlsx,.xlsm,.csv,.html,.htm" hidden>
+<script id="J-DB" type="application/json">/*@@DB@@*/</script>
+<script id="J-CUR" type="application/json">/*@@CUR@@*/</script>
+<script>/*@@XLSXJS@@*/</script>
+<script>/*@@EXCELJS@@*/</script>
+<script>/*@@APP@@*/</script>
+</body>
+</html>
