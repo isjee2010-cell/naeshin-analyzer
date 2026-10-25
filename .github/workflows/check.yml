@@ -1,0 +1,41 @@
+name: 보안 점검·시험
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: 빌드 (vendor 해시 확인 포함)
+        run: python3 tools/build.py
+
+      - name: 보안 점검 (데이터 없음·CSP·통신 기능 없음·자료 파일 미포함)
+        run: python3 tools/check.py
+
+      - name: 가상 시험 자료 만들기
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install --quiet openpyxl==3.1.5
+          .venv/bin/python tools/make_sample.py tests/tmp g2
+          .venv/bin/python tools/make_sample.py tests/tmp xss
+
+      - name: 브라우저 통합·보안 시험
+        working-directory: tests
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          node e2e.mjs
+
+      - name: 빌드 결과 해시
+        run: sha256sum dist/*.html
