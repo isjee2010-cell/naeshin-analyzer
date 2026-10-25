@@ -7,12 +7,13 @@
 
 ## 내려받기
 
-**[최신 버전 내려받기 (Releases)](https://github.com/isjee2010-cell/naeshin-analyzer/releases/latest)**
+**[최신 버전 내려받기 (Releases)](https://github.com/isjee2010-cell/naeshin-analyzer/releases/latest)** · **[사용 매뉴얼 PDF 바로 받기](https://github.com/isjee2010-cell/naeshin-analyzer/releases/latest/download/naeshin_manual.pdf)**
 
 | 파일 | 설명 |
 |---|---|
 | `naeshin_helper_v○.○.html` | 도우미 본체. 내 폴더에 저장한 뒤 크롬·엣지로 엽니다. |
 | `naeshin_settings_v○.○.xlsx` | (선택) 판정 기준값·교과군 매핑을 엑셀로 고쳐 올릴 때 쓰는 양식 |
+| `naeshin_manual.pdf` | 사용 매뉴얼 (A4 18쪽). 화면 사진에 누를 곳을 번호·빨간 상자로 표시했습니다. |
 | `SHA256SUMS.txt` | 받은 파일이 원본과 같은지 확인하는 값 |
 
 받은 파일이 원본과 같은지 확인하려면 (선택)
@@ -23,6 +24,8 @@
 나온 값이 `SHA256SUMS.txt`의 값과 같으면 됩니다.
 
 ## 쓰는 법
+
+> 화면 사진과 함께 자세히 보려면 **[사용 매뉴얼 PDF](https://github.com/isjee2010-cell/naeshin-analyzer/releases/latest/download/naeshin_manual.pdf)** 를 받아 보세요. 역할별(담임·학년부·설정 담당)로 나뉘어 있습니다.
 
 1. **나이스 파일 받기**: 나이스 › 학교생활기록부 › 학생부 항목별 조회 › 교과학습발달상황 › 교과학습발달상황 › **XLS Data** (반마다 한 번)
 2. 받은 HTML을 **내 폴더에 저장한 뒤** 크롬·엣지로 엽니다. (메신저 첨부를 바로 열지 마세요.)
